@@ -28,7 +28,7 @@ class PostListView(ListView):
         )
         return context
 
-class DraftPostListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+class DraftPostListView(LoginRequiredMixin, ListView):
     template_name = "posts/list.html"
     model = Post
 
@@ -44,9 +44,38 @@ class DraftPostListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         )
         return context
 
-class PostDetailView(DetailView):
+class ArchivedPostListView(LoginRequiredMixin, ListView):
+    template_name = "posts/list.html"
+    model = Post
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        archived = Status.objects.get(name="archived")
+        context["title"] = "Archived"
+        context["posts_list"] = (
+            Post.objects
+            .filter(status=archived)
+            .order_by("created_on").reverse()
+        )
+        return context
+
+class PostDetailView(UserPassesTestMixin, DetailView):
     template_name = "posts/detail.html"
     model = Post
+
+    def test_func(self):
+        post = self.get_object()
+        if post.status.name == "published":
+            return True
+        elif post.status.name == "draft":
+            if (self.request.user.is_authenticated
+                    and self.request.user == post.author):
+                return True
+        elif (post.status.name == "archived"
+                and self.request.user.is_authenticated):
+            return True
+        else:
+            return False
 
 class PostCreateView(LoginRequiredMixin, CreateView):
     template_name = "posts/new.html"
