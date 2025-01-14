@@ -21,7 +21,7 @@ class PostListView(ListView):
         context = super().get_context_data(**kwargs)
         published = Status.objects.get(name="published")
         context["title"] = "Published"
-        context["posts_list"] = (
+        context["post_list"] = (
             Post.objects
             .filter(status=published)
             .order_by("created_on").reverse()
@@ -36,7 +36,7 @@ class DraftPostListView(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         draft = Status.objects.get(name="draft")
         context["title"] = "Draft"
-        context["posts_list"] = (
+        context["post_list"] = (
             Post.objects
             .filter(status=draft)
             .filter(author=self.request.user)
@@ -52,7 +52,7 @@ class ArchivedPostListView(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         archived = Status.objects.get(name="archived")
         context["title"] = "Archived"
-        context["posts_list"] = (
+        context["post_list"] = (
             Post.objects
             .filter(status=archived)
             .order_by("created_on").reverse()

@@ -32,7 +32,7 @@
               {% if user.is_authenticated %}
               <a class="nav-link" href="{% url 'new' %}">New post</a>
               <a class="nav-link" href="{% url 'draft' %}">Drafts</a>
-              <a class="nav-link" href="{% url 'archived' %}">Archided</a>
+              <a class="nav-link" href="{% url 'archived' %}">Archive</a>
               <form method="POST" action="{% url 'logout' %}">
                 {% csrf_token %}
                 <input type="submit" class="nav-link" value="Log Out">
